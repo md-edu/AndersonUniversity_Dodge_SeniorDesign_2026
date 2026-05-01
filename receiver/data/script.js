@@ -5,11 +5,6 @@ function formatDateForHeader() {
   return now.toLocaleDateString(undefined, options);
 }
 
-// Convert mm -> inches
-function mmToIn(mm) {
-  return mm / 25.4;
-}
-
 // Update the page using ESP32's JSON format: { timestamp, uptime, nodes: [...] }
 function updateDisplay(packet) {
   // Update header date (local date)
@@ -25,18 +20,17 @@ function updateDisplay(packet) {
       if (!node || !node.online) {
         statusEl.textContent = "NO SIGNAL";
       } else {
-        const inches = mmToIn(node.distance);
-        statusEl.textContent = `${inches.toFixed(3)} in`;
+        statusEl.textContent = `${node.distance.toFixed(2)} mm`;
       }
     }
     return;
   }
 
   // Fallback (if you ever feed old demo JSON again)
-  document.getElementById("status1").textContent = (packet.distance1 ?? "NO DATA") + " in";
-  document.getElementById("status2").textContent = (packet.distance2 ?? "NO DATA") + " in";
-  document.getElementById("status3").textContent = (packet.distance3 ?? "NO DATA") + " in";
-  document.getElementById("status4").textContent = (packet.distance4 ?? "NO DATA") + " in";
+  document.getElementById("status1").textContent = (packet.distance1 ?? "NO DATA") + " mm";
+  document.getElementById("status2").textContent = (packet.distance2 ?? "NO DATA") + " mm";
+  document.getElementById("status3").textContent = (packet.distance3 ?? "NO DATA") + " mm";
+  document.getElementById("status4").textContent = (packet.distance4 ?? "NO DATA") + " mm";
 }
 
 // POLLING CODE
@@ -44,46 +38,26 @@ const POLL_INTERVAL_MS = 1000; // browser asks server for data
 
 async function pollData() {
   try {
-    const res = await fetch("/api/data", { cache: "no-store" }); 
-    // send HTTP GET request to /api/data, pause until server responds 
+    const res = await fetch("/api/data", { cache: "no-store" });
+    // send HTTP GET request to /api/data, pause until server responds
     // no store prevents browser from reusing cached responses
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json(); // convert JSON string from server into JavaScript object
     console.log("Received data:", data);
     updateDisplay(data);
   } catch (err) {
-  console.error("Polling error:", err);
-  document.getElementById("status1").textContent = "DISCONNECTED";
-  document.getElementById("status2").textContent = "DISCONNECTED";
-  document.getElementById("status3").textContent = "DISCONNECTED";
-  document.getElementById("status4").textContent = "DISCONNECTED";
+    console.error("Poll error:", err);
   }
 }
 
-// Start polling when page loads
+// Start polling
 setInterval(pollData, POLL_INTERVAL_MS);
-pollData(); // run immediately once
+pollData(); // first call immediately
 
-
-
-
-// CLOCK
-
-// Function to show the current time at the top-left corner
-function startClock() {
-  const clock = document.getElementById("clock");
-
-  function updateTime() {
-    const now = new Date();
-    const options = { hour: "numeric", minute: "numeric", second: "numeric" };
-    clock.textContent = now.toLocaleTimeString(undefined, options);
-  }
-
-  updateTime();             // show immediately
-  setInterval(updateTime, 1000); // update every second
+// Clock
+function updateClock() {
+  const now = new Date();
+  document.getElementById("clock").textContent = now.toLocaleTimeString();
 }
-
-// Start the clock when the page loads
-startClock();
-
-
+setInterval(updateClock, 1000);
+updateClock();
