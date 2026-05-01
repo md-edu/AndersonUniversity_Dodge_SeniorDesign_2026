@@ -1,0 +1,151 @@
+/* Full-page background image */
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: 'Segoe UI', Arial, sans-serif;
+
+}
+
+.background {
+  background-image: url('building.png');
+  background-size: cover;
+  background-position: center;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative; /* needed for the overlay below */
+}
+
+/* This creates a transparent color overlay on top of the image */
+.background::before {
+  content: "";
+  position: absolute;
+  inset: 0; /* fill the entire background area */
+  background-color: rgba(255, 255, 255, 0.6); /* white overlay, 60% opaque */
+  z-index: 0; /* sits behind your content */
+}
+
+.overlay {
+  position: relative;
+  z-index: 1; /* make sure it's above the overlay */
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  border: 0.5px solid black;
+}
+
+h1 {
+  font-size: 1.5em;
+  color: #000000;
+  margin-bottom: 30px;
+}
+
+ h2#datetime {
+  font-size: 0.9em;
+  color: #333;
+  margin-top: -10px;
+  margin-bottom: 25px;
+  font-weight: normal;
+ }
+
+#sensor-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 150px);
+  grid-gap: 20px;
+  justify-content: center;
+}
+
+
+.sensor-box {
+  border-radius: 15px;
+  padding: 20px;
+  background-color: #6e6e6e; /* default gray before data */
+  color: white;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.sensor-box h2 {
+  margin: 0;
+  font-size: 1.2em;
+}
+
+.sensor-box p {
+  font-size: 1em;
+  margin-top: 10px;
+}
+
+#clock {
+  position: fixed;       /* keeps it in the corner even if page scrolls */
+  top: 15px;
+  left: 20px;
+  font-size: 1.1em;
+  font-weight: 500;
+  color: #222;           /* adjust for contrast with your background */
+  background-color: rgba(255, 255, 255, 0.7); /* semi-transparent background */
+  padding: 5px 10px;
+  border-radius: 8px;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.15);
+  z-index: 5;            /* ensures it's above all other elements */
+}
+
+#logo {
+  position: fixed;             /* keeps it above the overlay */
+  top: 4vh;                   /* pushes it down ~15% of the viewport height */
+  left: 50%;                   /* centers horizontally */
+  transform: translateX(-50%); /* perfect horizontal centering */
+  width: 200px;                /* adjust as needed */
+  height: auto;
+  opacity: 0;
+  animation: fadeInLogo 2s ease forwards;
+  z-index: 10;                 /* ensures it's above everything */
+}
+@keyframes fadeInLogo {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.95); /* optional slight grow */
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+}
+
+.battery {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  font-size: 0.75em;
+  color: white;
+  opacity: 0.9;
+}
+
+.diff {
+  font-size: 0.9em;
+  margin-top: 5px;
+  opacity: 0.8;
+}
+
+/* Arrow indicator */
+.arrow {
+  font-size: 1em;
+  font-weight: bold;
+  margin-left: 6px;
+  opacity: 0.8;
+}
+
+/* Color coding */
+.sensor-box.good {
+  background-color: #3CB371;      /* green */
+}
+
+.sensor-box.warn {
+  background-color: #DAA520;      /* golden yellow */
+}
+
+.sensor-box.bad {
+  background-color: #B22222;      /* firebrick red */
+}
