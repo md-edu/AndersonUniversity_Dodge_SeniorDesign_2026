@@ -101,6 +101,36 @@ Before powering on, verify the following:
 
 The receiver ESP32-S3 requires no additional wiring beyond a 5V power source (USB). It communicates wirelessly with the sender nodes via ESP-NOW and hosts the web dashboard over WiFi.
 
+### Obtaining ESP32-S3 MAC Addresses
+
+ESP-NOW requires each device to know the MAC address of the device it communicates with. Before flashing the final firmware, you must obtain the MAC address of each ESP32-S3 board. Flash the following sketch to each board one at a time, open the Serial Monitor at 115200 baud, and record the printed MAC address:
+
+```cpp
+#include <Arduino.h>
+#include <WiFi.h>
+
+void setup() {
+    Serial.begin(115200);
+    delay(2000);
+    WiFi.mode(WIFI_STA);
+    Serial.println("\n=== MAC ADDRESS ===");
+    Serial.println(WiFi.macAddress());
+    Serial.println("===================");
+}
+
+void loop() {}
+```
+
+Once you have both MAC addresses:
+- Open `sender/src/main.cpp` and set the `receiverMAC[]` array to the receiver board's MAC address.
+- Open `receiver/src/main.cpp` and set the `senderMAC[]` array to the sender board's MAC address.
+
+The MAC address is printed in the format `XX:XX:XX:XX:XX:XX`. Convert each pair to a hex byte for the array. For example, if the receiver prints `DC:B4:D9:0C:D5:64`, set:
+
+```cpp
+uint8_t receiverMAC[] = {0xDC, 0xB4, 0xD9, 0x0C, 0xD5, 0x64};
+```
+
 ### Firmware Upload
 
 This project uses PlatformIO. To flash the firmware and web dashboard files:
